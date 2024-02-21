@@ -37,6 +37,16 @@ public class CustomerServiceImpl implements CustomerService {
 		Optional<Customer> customer=customerRepository2.findById(customerId);
 		if(customer.isPresent()){
 			Customer customer1=customer.get();
+			List<TripBooking> tripBookingList=customer1.getTripBookingList();
+
+			for(TripBooking tripBooking:tripBookingList){
+				tripBooking.setBill(0);
+				tripBooking.setStatus(TripStatus.CANCELED);
+				Driver driver=tripBooking.getDriver();
+				driver.getCab().setAvailable(true);
+				driverRepository2.save(driver);
+			}
+
 			customerRepository2.delete(customer1);
 		}
 	}
@@ -104,6 +114,7 @@ public class CustomerServiceImpl implements CustomerService {
 				return;
 			}
 			tripBooking1.setStatus(TripStatus.CANCELED);
+			tripBooking1.setBill(0);
 			Driver driver=tripBooking1.getDriver();
 			Cab cab=driver.getCab();
 			cab.setAvailable(true);
